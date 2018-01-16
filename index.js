@@ -58,7 +58,7 @@ updateTrackInfo = (track) => {
 
 updateTrackText = (title, artist, spotifyId) => {
   http.put({
-    url: 'http://localhost:3000/tracks/current',
+    url: 'http://bouffemon.uk:3000/tracks/current',
     reqBody: new Buffer(`title=${title}&artist=${artist}&spotifyId=${spotifyId}`),
     headers: {
       'content-type': 'application/x-www-form-urlencoded'
