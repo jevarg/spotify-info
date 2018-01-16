@@ -30,8 +30,8 @@ updateTrackInfo = (track) => {
     return;
   }
 
-  updateTrackText(track.track_resource.name, track.artist_resource.name);
   let resource_uri = track.track_resource.uri;
+  updateTrackText(track.track_resource.name, track.artist_resource.name, resource_uri.split(':')[2]);
 
   http.get('https://open.spotify.com/oembed?url=' + resource_uri, function (err, res) {
     if (err) {
@@ -56,10 +56,10 @@ updateTrackInfo = (track) => {
   });
 }
 
-updateTrackText = (title, artist) => {
+updateTrackText = (title, artist, spotifyId) => {
   http.put({
-    url: 'http://bouffemon.uk:3000/currentTrack',
-    reqBody: new Buffer(`name=${title} - ${artist}`),
+    url: 'http://localhost:3000/tracks/current',
+    reqBody: new Buffer(`title=${title}&artist=${artist}&spotifyId=${spotifyId}`),
     headers: {
       'content-type': 'application/x-www-form-urlencoded'
     }
