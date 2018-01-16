@@ -29,8 +29,8 @@ updateTrackInfo = (track) => {
   if (!track) {
     return;
   }
-  writeTrackTextInfo(track.track_resource.name, track.artist_resource.name);
 
+  updateTrackText(track.track_resource.name, track.artist_resource.name);
   let resource_uri = track.track_resource.uri;
 
   http.get('https://open.spotify.com/oembed?url=' + resource_uri, function (err, res) {
@@ -56,10 +56,25 @@ updateTrackInfo = (track) => {
   });
 }
 
-writeTrackTextInfo = (title, artist) => {
+updateTrackText = (title, artist) => {
+  http.put({
+    url: 'http://bouffemon.uk:3000/currentTrack',
+    reqBody: new Buffer(`name=${title} - ${artist}`),
+    headers: {
+      'content-type': 'application/x-www-form-urlencoded'
+    }
+  }, function (err, res) {
+    if (err) {
+      console.error(err);
+      return;
+    }
+
+    console.log(res.code, res.headers, res.buffer.toString());
+  });
+
   fs.writeFile("./track_title.txt", `${title}\r\n${artist}`, function (err) {
     if (err) {
       return console.log(err);
     }
-  }); 
+  });
 }
