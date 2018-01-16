@@ -6,6 +6,8 @@ const fs = require('fs');
 const helper = SpotifyWebHelper();
 console.log('Starting...');
 
+var interval;
+
 helper.player.on('error', error => {
   console.error(error);
   if (error.message.match(/No user logged in/)) {
@@ -57,6 +59,10 @@ updateTrackInfo = (track) => {
 }
 
 updateTrackText = (title, artist, spotifyId) => {
+  if (interval) {
+    clearInterval(interval);
+  }
+
   http.put({
     url: 'http://bouffemon.uk:3000/tracks/current',
     reqBody: new Buffer(`title=${title}&artist=${artist}&spotifyId=${spotifyId}`),
@@ -68,6 +74,21 @@ updateTrackText = (title, artist, spotifyId) => {
       console.error(err);
       return;
     }
+
+    interval = setInterval(() => {
+      http.get('http://bouffemon.uk:3000/tracks/current/love/count', function (err, res) {
+        if (err) {
+          console.error(err);
+          return;
+        }
+
+        fs.writeFile("./track_love_count.txt", res.buffer.toString(), function (err) {
+          if (err) {
+            return console.log(err);
+          }
+        });
+      });
+    }, 2000);
 
     console.log(res.code, res.headers, res.buffer.toString());
   });
